@@ -8,7 +8,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -25,7 +24,7 @@ public class Routes {
     }
 
     @GetMapping(value = "/livro/{id}")
-    public ResponseEntity<LivroModel> getLivros(@PathVariable("id") int id) throws SQLException {
+    public ResponseEntity<LivroModel> getLivros(@PathVariable("id") int id){
         return serviceLivro.findById(id);
     }
 
