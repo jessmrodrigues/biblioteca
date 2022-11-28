@@ -1,6 +1,8 @@
 package com.ifsp.biblioteca.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class LivroModel {
+    @JsonIgnoreProperties
     private int boid;
     private String titulo;
     private String author;

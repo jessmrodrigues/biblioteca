@@ -33,9 +33,9 @@ public class Routes {
         return serviceLivro.findById(id);
     }
 
-    @PutMapping(value = "/{id}")
-    public ResponseEntity<LivroModel> updateCidade(@RequestBody LivroModel livro) throws SQLException {
-        return serviceLivro.update(livro);
+    @PutMapping("/{id}")
+    public ResponseEntity<LivroModel> updateCidade(@RequestBody LivroModel livro, @PathVariable("id") int id) {
+        return serviceLivro.update(livro, id);
     }
     @DeleteMapping("/{id}")
     public void deleteLivro(@PathVariable int id) {

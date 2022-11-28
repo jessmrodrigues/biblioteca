@@ -23,8 +23,6 @@ public class MySqlLivro implements LivroDAO {
     }
 
     public ResponseEntity<String> insert(LivroModel livro) throws SQLException {
-        //this.connection = new Conexao().getConexao();
-
         String sql;
         if (this.connection != null) {
             sql = "INSERT INTO books(titulo, author, email) VALUES(?,?,?)";
@@ -91,11 +89,29 @@ public class MySqlLivro implements LivroDAO {
         return null;
     }
 
+    public ResponseEntity<LivroModel> update(LivroModel livro, int id) {
+        if (this.connection != null) {
+            try {
+                PreparedStatement stmt =
+                        connection.prepareStatement("UPDATE books SET titulo = ?, author = ?, email = ? WHERE boid = "+ id);
+
+                stmt.setString(1, livro.getTitulo());
+                stmt.setString(2, livro.getAuthor());
+                stmt.setString(3, livro.getEmail());
+
+                stmt.execute();
+                //stmt.close();
+                return ResponseEntity.ok(livro);
+            } catch (SQLException e) {
+                e.getMessage();
+            }
+        }
+        return null;
+    }
 
     public void remove(int id) {
         if (this.connection != null) {
             try {
-                LivroModel livroModel = new LivroModel();
                 PreparedStatement stmt = connection.prepareStatement("DELETE FROM books WHERE boid = ?");
 
                 stmt.setInt(1, id);
@@ -106,18 +122,5 @@ public class MySqlLivro implements LivroDAO {
                 throw new RuntimeException(u);
             }
         }
-    }
-
-    public ResponseEntity<LivroModel> update(LivroModel livro) throws SQLException {
-        String sql = "UPDATE livros SET titulo = ?, author = ?, email = ? WHERE boid = ?";
-
-        PreparedStatement stmt = connection.prepareStatement(sql);
-
-        stmt.setString(1, livro.getTitulo());
-        stmt.setString(2, livro.getAuthor());
-        stmt.setString(3, livro.getEmail());
-        stmt.execute();
-        stmt.close();
-        return null;
     }
 }

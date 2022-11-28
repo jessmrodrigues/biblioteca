@@ -13,6 +13,6 @@ public interface LivroDAO {
      ResponseEntity<String> insert(LivroModel livro) throws SQLException;
      ResponseEntity<LivroModel> findById(int id) throws SQLException;
      ResponseEntity<List<LivroModel>> findAll() throws SQLException;
-     ResponseEntity<LivroModel> update(LivroModel livro) throws SQLException;
+     ResponseEntity<LivroModel> update(LivroModel livro, int id) throws SQLException;
      void remove(int id);
 }
