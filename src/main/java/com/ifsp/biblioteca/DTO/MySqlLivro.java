@@ -91,22 +91,21 @@ public class MySqlLivro implements LivroDAO {
         return null;
     }
 
-    public ResponseEntity<LivroModel> remove(LivroModel livro) {
-        try {
-            String sql;
-            if (!String.valueOf(livro.getBoid()).isEmpty()) {
-                sql = "DELETE FROM books WHERE boid = ?";
-                PreparedStatement stmt = connection.prepareStatement(sql);
 
-                stmt.setInt(1, livro.getBoid());
-                stmt.execute();
-                stmt.close();
+    public void remove(int id) {
+        if (this.connection != null) {
+            try {
+                LivroModel livroModel = new LivroModel();
+                PreparedStatement stmt = connection.prepareStatement("DELETE FROM books WHERE boid = ?");
 
+                stmt.setInt(1, id);
+
+                stmt.executeUpdate();
+                //stmt.close();
+            } catch (SQLException u) {
+                throw new RuntimeException(u);
             }
-        } catch (SQLException u) {
-            throw new RuntimeException(u);
         }
-        return null;
     }
 
     public ResponseEntity<LivroModel> update(LivroModel livro) throws SQLException {
