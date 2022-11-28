@@ -6,7 +6,6 @@ import com.ifsp.biblioteca.model.LivroModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import javax.swing.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -22,20 +21,23 @@ public class MySqlLivro implements LivroDAO {
         this.connection = new Conexao().getConexao();
     }
 
-    public ResponseEntity<String> insert(LivroModel livro) throws SQLException {
-        String sql;
+    public ResponseEntity insert(LivroModel livro) {
         if (this.connection != null) {
-            sql = "INSERT INTO books(titulo, author, email) VALUES(?,?,?)";
-            PreparedStatement stmt = connection.prepareStatement(sql);
+            try {
+                PreparedStatement stmt = connection.prepareStatement("INSERT INTO books(titulo, author, email) VALUES(?,?,?)");
 
-            stmt.setString(1, livro.getTitulo());
-            stmt.setString(2, livro.getAuthor());
-            stmt.setString(3, livro.getEmail());
-            stmt.execute();
-            stmt.close();
-            return ResponseEntity.ok("deu certo");
+                stmt.setString(1, livro.getTitulo());
+                stmt.setString(2, livro.getAuthor());
+                stmt.setString(3, livro.getEmail());
+                stmt.execute();
+                stmt.close();
+                return ResponseEntity.ok("Criado");
+            }catch (Exception e) {
+                e.getMessage();
+            }
+            return ResponseEntity.badRequest().body("Falha na request");
         }
-        return ResponseEntity.badRequest().body("conexão falhou");
+        return null;
     }
 
     public ResponseEntity<List<LivroModel>> findAll() {
@@ -47,8 +49,6 @@ public class MySqlLivro implements LivroDAO {
                 ResultSet rs = ps.executeQuery();
 
                 while (rs.next()) {
-                    System.out.println("entrou");
-
                     LivroModel livroModel = new LivroModel();
                     livroModel.setBoid(rs.getInt("boid"));
                     livroModel.setTitulo(rs.getString("titulo"));
@@ -56,9 +56,6 @@ public class MySqlLivro implements LivroDAO {
                     livroModel.setEmail(rs.getString("email"));
                     dados.add(livroModel);
                 }
-                //ps.close();
-                // rs.close();
-                // connection.close();
                 return ResponseEntity.ok(dados);
             } catch (SQLException e) {
                 e.getMessage();
@@ -100,7 +97,6 @@ public class MySqlLivro implements LivroDAO {
                 stmt.setString(3, livro.getEmail());
 
                 stmt.execute();
-                //stmt.close();
                 return ResponseEntity.ok(livro);
             } catch (SQLException e) {
                 e.getMessage();
@@ -117,7 +113,6 @@ public class MySqlLivro implements LivroDAO {
                 stmt.setInt(1, id);
 
                 stmt.executeUpdate();
-                //stmt.close();
             } catch (SQLException u) {
                 throw new RuntimeException(u);
             }

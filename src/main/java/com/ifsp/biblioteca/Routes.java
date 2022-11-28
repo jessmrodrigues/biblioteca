@@ -20,7 +20,7 @@ public class Routes {
     }
     @PostMapping
     @ResponseStatus(code = HttpStatus.CREATED)
-    public ResponseEntity<String> createLivro(@RequestBody LivroModel livro) throws SQLException {
+    public ResponseEntity createLivro(@RequestBody LivroModel livro) {
         return serviceLivro.insert(livro);
     }
     @GetMapping
