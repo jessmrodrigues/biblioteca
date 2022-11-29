@@ -29,12 +29,12 @@ public class RouteLivro {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<LivroModel> getLivros(@PathVariable("id") int id) {
+    public ResponseEntity<LivroModel> getLivro(@PathVariable("id") int id) {
         return serviceLivro.findById(id);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<LivroModel> updateCidade(@RequestBody LivroModel livro, @PathVariable("id") int id) {
+    public ResponseEntity<LivroModel> updateLivro(@RequestBody LivroModel livro, @PathVariable("id") int id) {
         return serviceLivro.update(livro, id);
     }
 

@@ -13,8 +13,8 @@ import java.util.List;
 public class RouteUser {
     private final MySqlUsuario serviceUsuario;
 
-    public RouteUser(MySqlUsuario serviceLivro) {
-        this.serviceUsuario = serviceLivro;
+    public RouteUser(MySqlUsuario serviceUsuario) {
+        this.serviceUsuario = serviceUsuario;
     }
     @PostMapping
     @ResponseStatus(code = HttpStatus.CREATED)

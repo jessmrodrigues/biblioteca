@@ -19,21 +19,21 @@ public class RoutePublisher {
 
     @PostMapping
     @ResponseStatus(code = HttpStatus.CREATED)
-    public ResponseEntity createLivro(@RequestBody PublisherModel publisher) {
+    public ResponseEntity createPublisher(@RequestBody PublisherModel publisher) {
         return servicePublisher.insert(publisher);
     }
     @GetMapping
-    public ResponseEntity<List<PublisherModel>> getLivros() {
+    public ResponseEntity<List<PublisherModel>> getPublisher() {
         return servicePublisher.findAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PublisherModel> getLivros(@PathVariable("id") int id) {
+    public ResponseEntity<PublisherModel> getPublisher(@PathVariable("id") int id) {
         return servicePublisher.findById(id);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PublisherModel> updateCidade(@RequestBody PublisherModel publisher, @PathVariable("id") int id) {
+    public ResponseEntity<PublisherModel> updatePublisher(@RequestBody PublisherModel publisher, @PathVariable("id") int id) {
         return servicePublisher.update(publisher, id);
     }
     @DeleteMapping("/{id}")

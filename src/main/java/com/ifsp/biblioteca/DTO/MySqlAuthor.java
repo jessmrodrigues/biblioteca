@@ -1,8 +1,8 @@
 package com.ifsp.biblioteca.DTO;
 
-import com.ifsp.biblioteca.BibliotecaDAO.UsuarioDAO;
+import com.ifsp.biblioteca.BibliotecaDAO.AuthorDAO;
 import com.ifsp.biblioteca.Conexao;
-import com.ifsp.biblioteca.model.UsuarioModel;
+import com.ifsp.biblioteca.model.AuthorModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -14,19 +14,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class MySqlUsuario implements UsuarioDAO {
+public class MySqlAuthor implements AuthorDAO {
     private Connection connection;
-    public MySqlUsuario() {
+
+    public MySqlAuthor() {
         this.connection = new Conexao().getConexao();
     }
 
-    public ResponseEntity insert(UsuarioModel usuario) {
+    @Override
+    public ResponseEntity insert(AuthorModel author) {
         if (this.connection != null) {
             try {
-                PreparedStatement stmt = connection.prepareStatement("INSERT INTO user(usid, name) VALUES(?,?)");
+                PreparedStatement stmt = connection.prepareStatement("INSERT INTO author(auid, name) VALUES(?,?)");
 
-                stmt.setInt(1, usuario.getId());
-                stmt.setString(2, usuario.getNome());
+                stmt.setInt(1, author.getId());
+                stmt.setString(2, author.getNome());
                 stmt.execute();
                 stmt.close();
                 return ResponseEntity.ok("Criado");
@@ -38,19 +40,40 @@ public class MySqlUsuario implements UsuarioDAO {
         return null;
     }
 
-    public ResponseEntity<List<UsuarioModel>> findAll() {
+    @Override
+    public ResponseEntity<AuthorModel> findById(int id) {
         if (this.connection != null) {
             try {
-                List<UsuarioModel> dados = new ArrayList<>();
-
-                PreparedStatement ps = connection.prepareStatement("SELECT * FROM user");
+                AuthorModel authorModel = new AuthorModel();
+                PreparedStatement ps = connection.prepareStatement("SELECT * FROM author WHERE auid = " + id);
                 ResultSet rs = ps.executeQuery();
 
                 while (rs.next()) {
-                    UsuarioModel usuarioModel = new UsuarioModel();
-                    usuarioModel.setId(rs.getInt("usid"));
-                    usuarioModel.setNome(rs.getString("name"));
-                    dados.add(usuarioModel);
+                    authorModel.setId(rs.getInt("auid"));
+                    authorModel.setNome(rs.getString("name"));
+                    return ResponseEntity.ok(authorModel);
+                }
+            } catch (SQLException e) {
+                e.getMessage();
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public ResponseEntity<List<AuthorModel>> findAll() {
+        if (this.connection != null) {
+            try {
+                List<AuthorModel> dados = new ArrayList<>();
+
+                PreparedStatement ps = connection.prepareStatement("SELECT * FROM author");
+                ResultSet rs = ps.executeQuery();
+
+                while (rs.next()) {
+                    AuthorModel authorModel = new AuthorModel();
+                    authorModel.setId(rs.getInt("auid"));
+                    authorModel.setNome(rs.getString("name"));
+                    dados.add(authorModel);
                 }
                 return ResponseEntity.ok(dados);
             } catch (SQLException e) {
@@ -61,35 +84,16 @@ public class MySqlUsuario implements UsuarioDAO {
     }
 
     @Override
-    public ResponseEntity<UsuarioModel> findById(int id) {
-        if (this.connection != null) {
-            try {
-                UsuarioModel usuarioModel = new UsuarioModel();
-                PreparedStatement ps = connection.prepareStatement("SELECT * FROM user WHERE usid = " + id);
-                ResultSet rs = ps.executeQuery();
-
-                while (rs.next()) {
-                    usuarioModel.setId(rs.getInt("usid"));
-                    usuarioModel.setNome(rs.getString("name"));
-                    return ResponseEntity.ok(usuarioModel);
-                }
-            } catch (SQLException e) {
-                e.getMessage();
-            }
-        }
-        return null;
-    }
-
-    public ResponseEntity<UsuarioModel> update(UsuarioModel usuario, int id) {
+    public ResponseEntity<AuthorModel> updated(AuthorModel author, int id) {
         if (this.connection != null) {
             try {
                 PreparedStatement stmt =
-                        connection.prepareStatement("UPDATE user SET name = ? WHERE usid = " + id);
+                        connection.prepareStatement("UPDATE author SET name = ? WHERE auid = " + id);
 
-                stmt.setString(1, usuario.getNome());
+                stmt.setString(1, author.getNome());
 
                 stmt.execute();
-                return ResponseEntity.ok(usuario);
+                return ResponseEntity.ok(author);
             } catch (SQLException e) {
                 e.getMessage();
             }
@@ -97,10 +101,11 @@ public class MySqlUsuario implements UsuarioDAO {
         return null;
     }
 
+    @Override
     public void remove(int id) {
         if (this.connection != null) {
             try {
-                PreparedStatement stmt = connection.prepareStatement("DELETE FROM user WHERE usid = ?");
+                PreparedStatement stmt = connection.prepareStatement("DELETE FROM author WHERE auid = ?");
 
                 stmt.setInt(1, id);
 
