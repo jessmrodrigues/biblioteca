@@ -112,5 +112,4 @@ public class MySqlUsuario implements UsuarioDAO {
             }
         }
     }
-
 }
