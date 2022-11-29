@@ -1,111 +1,115 @@
 package com.ifsp.biblioteca.DTO;
 
 import com.ifsp.biblioteca.BibliotecaDAO.UsuarioDAO;
+import com.ifsp.biblioteca.Conexao;
 import com.ifsp.biblioteca.model.UsuarioModel;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import javax.swing.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class MySqlUsuario implements UsuarioDAO {
     private Connection connection;
 
-    public void insert(UsuarioModel usuario) throws SQLException {
 
-        String sql;
-        if (String.valueOf(usuario.getId()).isEmpty()) {
-            sql = "INSERT INTO usuario(nome,endereco,telefone) VALUES(?,?,?)";
-            PreparedStatement stmt = connection.prepareStatement(sql);
-
-            stmt.setString(1, usuario.getNome());
-            stmt.setString(2, usuario.getEndereco());
-            stmt.setInt(3, usuario.getTelefone());
-            stmt.execute();
-            stmt.close();
-        }
+    public MySqlUsuario() {
+        this.connection = new Conexao().getConexao();
     }
 
-    public void remove(UsuarioModel usuario) {
-        try {
-            String sql;
-            if (!String.valueOf(usuario.getId()).isEmpty()) {
-                sql = "DELETE FROM usuario WHERE IDusuario = ?";
-                PreparedStatement stmt = connection.prepareStatement(sql);
+    public ResponseEntity insert(UsuarioModel usuario) {
+        if (this.connection != null) {
+            try {
+                PreparedStatement stmt = connection.prepareStatement("INSERT INTO user(usid, name) VALUES(?,?)");
 
                 stmt.setInt(1, usuario.getId());
+                stmt.setString(2, usuario.getNome());
                 stmt.execute();
                 stmt.close();
-
+                return ResponseEntity.ok("Criado");
+            } catch (Exception e) {
+                e.getMessage();
             }
-        } catch (SQLException u) {
-            throw new RuntimeException(u);
+            return ResponseEntity.badRequest().body("Falha na request");
         }
+        return null;
     }
 
-    public UsuarioModel findById(UsuarioModel usuario) {
-        try {
-            String sql = "";
-            if (!usuario.getNome().isEmpty()) {
-                sql = "SELECT * FROM usuario WHERE nome LIKE '%" + usuario.getNome() + "%' ";
+    public ResponseEntity<List<UsuarioModel>> findAll() {
+        if (this.connection != null) {
+            try {
+                List<UsuarioModel> dados = new ArrayList<>();
 
+                PreparedStatement ps = connection.prepareStatement("SELECT * FROM user");
+                ResultSet rs = ps.executeQuery();
+
+                while (rs.next()) {
+                    UsuarioModel usuarioModel = new UsuarioModel();
+                    usuarioModel.setId(rs.getInt("usid"));
+                    usuarioModel.setNome(rs.getString("name"));
+                    dados.add(usuarioModel);
+                }
+                return ResponseEntity.ok(dados);
+            } catch (SQLException e) {
+                e.getMessage();
             }
-
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery();
-
-
-            ps.close();
-            rs.close();
-            connection.close();
-        } catch (SQLException e) {
-            e.getMessage();
-            return null;
         }
-        return usuario;
+        return null;
     }
 
-    public void update(UsuarioModel usuario) throws SQLException {
-        String sql = "UPDATE livros SET nome = ?, endereco = ?, telefone = ? WHERE IDautor = ?";
+    @Override
+    public ResponseEntity<UsuarioModel> findById(int id) {
+        if (this.connection != null) {
+            try {
+                UsuarioModel usuarioModel = new UsuarioModel();
+                PreparedStatement ps = connection.prepareStatement("SELECT * FROM user WHERE usid = " + id);
+                ResultSet rs = ps.executeQuery();
 
-        PreparedStatement stmt = connection.prepareStatement(sql);
-
-        stmt.setString(1, usuario.getNome());
-        stmt.setString(2, usuario.getEndereco());
-        stmt.setString(3, usuario.getEndereco());
-        stmt.execute();
-        stmt.close();
-    }
-
-    public ArrayList findAll() {
-        try {
-            ArrayList dado = new ArrayList();
-
-            PreparedStatement ps = connection.prepareStatement("SELECT * FROM usuario");
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-
-                dado.add(new Object[]{
-                        rs.getInt("id"),
-                        rs.getString("nome"),
-                        rs.getString("endereco"),
-                        rs.getInt("telefone"),
-                });
+                while (rs.next()) {
+                    usuarioModel.setId(rs.getInt("usid"));
+                    usuarioModel.setNome(rs.getString("name"));
+                    return ResponseEntity.ok(usuarioModel);
+                }
+            } catch (SQLException e) {
+                e.getMessage();
             }
-            ps.close();
-            rs.close();
-            connection.close();
+        }
+        return null;
+    }
 
-            return dado;
-        } catch (SQLException e) {
-            e.getMessage();
-            JOptionPane.showMessageDialog(null, "Erro preencher o ArrayList");
-            return null;
+    public ResponseEntity<UsuarioModel> update(UsuarioModel usuario, int id) {
+        if (this.connection != null) {
+            try {
+                PreparedStatement stmt =
+                        connection.prepareStatement("UPDATE user SET name = ? WHERE usid = " + id);
+
+                stmt.setString(1, usuario.getNome());
+
+                stmt.execute();
+                return ResponseEntity.ok(usuario);
+            } catch (SQLException e) {
+                e.getMessage();
+            }
+        }
+        return null;
+    }
+
+    public void remove(int id) {
+        if (this.connection != null) {
+            try {
+                PreparedStatement stmt = connection.prepareStatement("DELETE FROM user WHERE usid = ?");
+
+                stmt.setInt(1, id);
+
+                stmt.executeUpdate();
+            } catch (SQLException u) {
+                throw new RuntimeException(u);
+            }
         }
     }
 
