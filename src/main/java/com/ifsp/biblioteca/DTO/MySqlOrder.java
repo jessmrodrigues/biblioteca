@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 @Service
@@ -90,6 +91,17 @@ public class MySqlOrder implements OrderDAO {
 
     @Override
     public void remove(int id) {
+        if (this.connection != null) {
+            try {
+                PreparedStatement stmt = connection.prepareStatement("DELETE FROM orderp WHERE orid = ?");
+
+                stmt.setInt(1, id);
+
+                stmt.executeUpdate();
+            } catch (SQLException u) {
+                throw new RuntimeException(u);
+            }
+        }
 
     }
 }

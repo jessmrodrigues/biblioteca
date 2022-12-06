@@ -21,5 +21,9 @@ public class RouteOrder {
     public ResponseEntity createOrder(@RequestBody OrderModel order) {
         return serviceOrder.insert(order);
     }
+    @DeleteMapping("/{id}")
+    public void deleteOrder(@PathVariable int id) {
+        serviceOrder.remove(id);
+    }
 
 }
