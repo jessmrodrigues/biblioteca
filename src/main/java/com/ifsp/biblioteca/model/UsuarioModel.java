@@ -3,9 +3,15 @@ package com.ifsp.biblioteca.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 public class UsuarioModel {
-    @JsonIgnoreProperties
     private int id;
     private String nome;
+
+    public UsuarioModel(){}
+
+    public UsuarioModel(int id, String nome){
+        this.id = id;
+        this.nome = nome;
+    }
 
     public int getId() {
         return id;
