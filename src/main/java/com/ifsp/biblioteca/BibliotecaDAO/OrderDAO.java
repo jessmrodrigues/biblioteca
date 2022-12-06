@@ -12,7 +12,7 @@ public interface OrderDAO {
 
     ResponseEntity<List<OrderModel>> findAll();
 
-    ResponseEntity<OrderModel> update(OrderModel order, int id);
+    void update(OrderModel order, int id);
 
     void remove(int id);
 }

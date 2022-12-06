@@ -44,8 +44,8 @@ public class MySqlOrder implements OrderDAO {
                     ResultSet idOrdemVenda = stmt.getGeneratedKeys();
                     //idOrdemVenda.next();
 
-                    if(idOrdemVenda.next()) {
-                        System.out.println("TESTE: "+ idOrdemVenda.getInt(1));
+                    if (idOrdemVenda.next()) {
+                        System.out.println("TESTE: " + idOrdemVenda.getInt(1));
                     }
 
                     int idOV = idOrdemVenda.getInt(1);
@@ -85,8 +85,39 @@ public class MySqlOrder implements OrderDAO {
     }
 
     @Override
-    public ResponseEntity<OrderModel> update(OrderModel order, int id) {
-        return null;
+    public void update(OrderModel order, int id) {
+        if (this.connection != null) {
+            try {
+                PreparedStatement stmt = connection.prepareStatement("UPDATE orderp SET date = ?, fkusid = ?, endereco = ?, pagamento = ? where orid = " + id);
+                UsuarioModel usuario = order.getUsuario();
+                if (usuario != null) {
+                    stmt.setString(1, order.getDate());
+                    stmt.setInt(2, usuario.getId());
+                    stmt.setString(3, order.getEndereco());
+                    stmt.setString(4, order.getPagamento());
+                    stmt.executeUpdate();
+
+                    PreparedStatement stmt2 = this.connection.prepareStatement("DELETE FROM orderitens WHERE fkorid = ?");
+                    stmt2.setInt(1, id);
+                    stmt2.executeUpdate();
+
+                    PreparedStatement stm3 = this.connection.prepareStatement("INSERT INTO orderitens(fkorid, fkboid, qtde) VALUES (?,?,?)");
+
+                    for (ItemPedidoModel item : order.getItemPedido()) {
+                        LivroModel livro = item.getLivro();
+                        if (livro != null) {
+                            stm3.setInt(1, order.getId());
+                            stm3.setLong(2, livro.getBoid());
+                            stm3.setInt(3, item.getQuantidade());
+                            stm3.executeUpdate();
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                e.getMessage();
+            }
+        }
+
     }
 
     @Override
