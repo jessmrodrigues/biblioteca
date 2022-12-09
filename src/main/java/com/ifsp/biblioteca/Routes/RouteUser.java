@@ -27,7 +27,7 @@ public class RouteUser {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UsuarioModel> getLivros(@PathVariable("id") int id) {
+    public UsuarioModel getLivros(@PathVariable("id") int id) {
         return serviceUsuario.findById(id);
     }
 

@@ -1,6 +1,5 @@
 package com.ifsp.biblioteca.DTO;
 
-import com.ifsp.biblioteca.BibliotecaDAO.LivroDAO;
 import com.ifsp.biblioteca.BibliotecaDAO.OrderDAO;
 import com.ifsp.biblioteca.Conexao;
 import com.ifsp.biblioteca.model.ItemPedidoModel;
@@ -14,11 +13,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class MySqlOrder implements OrderDAO {
-    private LivroDAO livroDAO;
+    private MySqlLivro livroDAO = new MySqlLivro();
+    private MySqlUsuario usuarioDAO = new MySqlUsuario();
     private Connection connection;
 
     public MySqlOrder() {
@@ -61,7 +62,7 @@ public class MySqlOrder implements OrderDAO {
                             ps2.executeUpdate();
 
                             LivroModel livroTemp;
-                            livroTemp = livroDAO.findById(livro.getBoid()).getBody();
+                            livroTemp = livroDAO.findById(livro.getBoid());
                             livroDAO.update(livroTemp, livro.getBoid());
                         }
                     }
@@ -75,13 +76,91 @@ public class MySqlOrder implements OrderDAO {
     }
 
     @Override
-    public ResponseEntity<OrderModel> findById(int id) {
-        return null;
+    public OrderModel findById(int id) {
+        OrderModel order = new OrderModel();
+
+        if (this.connection != null) {
+            try {
+                PreparedStatement stmt = connection.prepareStatement("SELECT * FROM orderp where orid = " + id);
+                PreparedStatement stmt2 = connection.prepareStatement("SELECT * FROM orderitens where fkorid = " + id);
+
+                ResultSet rsPedido = stmt.executeQuery();
+
+                if (rsPedido.next()) {
+                    UsuarioModel usuario = usuarioDAO.findById(rsPedido.getInt("fkusid"));
+
+                    if (usuario != null) {
+                        order.setId(rsPedido.getInt("orid"));
+                        order.setDate(rsPedido.getString("date"));
+                        order.setUsuario(usuario);
+                        order.setEndereco(rsPedido.getString("endereco"));
+                        order.setPagamento(rsPedido.getString("pagamento"));
+
+                        ArrayList<ItemPedidoModel> itens = new ArrayList<>();
+
+                        ResultSet rsItens = stmt2.executeQuery();
+                        while (rsItens.next()) {
+                            LivroModel livro = livroDAO.findById(rsItens.getInt("fkboid"));
+                            if (livro != null) {
+                                ItemPedidoModel item = new ItemPedidoModel();
+                                item.setId(rsItens.getInt("fkorid"));
+                                item.setLivro(livro);
+                                item.setQuantidade(rsItens.getInt("qtde"));
+                                itens.add(item);
+                            }
+                        }
+                        order.setItemPedido(itens);
+                    }
+                }
+            } catch (Exception e) {
+                e.getMessage();
+            }
+        }
+        return order;
     }
 
     @Override
-    public ResponseEntity<List<OrderModel>> findAll() {
-        return null;
+    public List<OrderModel> findAll() {
+        ArrayList<OrderModel> pedidos = new ArrayList<>();
+        if (this.connection != null) {
+            try {
+                PreparedStatement stmt = connection.prepareStatement("SELECT * FROM orderp");
+                PreparedStatement stmt2 = connection.prepareStatement("SELECT * FROM orderitens");
+
+                ResultSet rsPedido = stmt.executeQuery();
+
+                while (rsPedido.next()) {
+                    UsuarioModel usuario = usuarioDAO.findById(rsPedido.getInt("fkusid"));
+                    if (usuario != null) {
+                        OrderModel order = new OrderModel();
+                        order.setId(rsPedido.getInt("orid"));
+                        order.setDate(rsPedido.getString("date"));
+                        order.setUsuario(usuario);
+                        order.setEndereco(rsPedido.getString("endereco"));
+                        order.setPagamento(rsPedido.getString("pagamento"));
+
+                        ArrayList<ItemPedidoModel> itens = new ArrayList<>();
+
+                        ResultSet rsItens = stmt2.executeQuery();
+                        while (rsItens.next()) {
+                            LivroModel livro = livroDAO.findById(rsItens.getInt("fkboid"));
+                            if (livro != null) {
+                                ItemPedidoModel item = new ItemPedidoModel();
+                                item.setId(rsItens.getInt("fkorid"));
+                                item.setLivro(livro);
+                                item.setQuantidade(rsItens.getInt("qtde"));
+                                itens.add(item);
+                            }
+                        }
+                        order.setItemPedido(itens);
+                        pedidos.add(order);
+                    }
+                }
+            } catch (Exception e) {
+                e.getMessage();
+            }
+        }
+        return pedidos;
     }
 
     @Override

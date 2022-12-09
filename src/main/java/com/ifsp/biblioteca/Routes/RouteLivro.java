@@ -29,7 +29,7 @@ public class RouteLivro {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<LivroModel> getLivro(@PathVariable("id") int id) {
+    public LivroModel getLivro(@PathVariable("id") int id) {
         return serviceLivro.findById(id);
     }
 

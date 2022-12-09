@@ -10,7 +10,7 @@ import java.util.List;
 public interface LivroDAO {
 
      ResponseEntity insert(LivroModel livro);
-     ResponseEntity<LivroModel> findById(int id) throws SQLException;
+     LivroModel findById(int id) throws SQLException;
      ResponseEntity<List<LivroModel>> findAll() throws SQLException;
      ResponseEntity<LivroModel> update(LivroModel livro, int id) throws SQLException;
      void remove(int id);

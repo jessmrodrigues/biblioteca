@@ -61,7 +61,7 @@ public class MySqlUsuario implements UsuarioDAO {
     }
 
     @Override
-    public ResponseEntity<UsuarioModel> findById(int id) {
+    public UsuarioModel findById(int id) {
         if (this.connection != null) {
             try {
                 UsuarioModel usuarioModel = new UsuarioModel();
@@ -71,7 +71,7 @@ public class MySqlUsuario implements UsuarioDAO {
                 while (rs.next()) {
                     usuarioModel.setId(rs.getInt("usid"));
                     usuarioModel.setNome(rs.getString("name"));
-                    return ResponseEntity.ok(usuarioModel);
+                    return usuarioModel;
                 }
             } catch (SQLException e) {
                 e.getMessage();

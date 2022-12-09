@@ -8,9 +8,8 @@ import java.util.List;
 public interface OrderDAO {
     ResponseEntity insert(OrderModel order);
 
-    ResponseEntity<OrderModel> findById(int id);
-
-    ResponseEntity<List<OrderModel>> findAll();
+    OrderModel findById(int id);
+    List<OrderModel> findAll();
 
     void update(OrderModel order, int id);
 

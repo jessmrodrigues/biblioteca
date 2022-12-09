@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface UsuarioDAO {
     ResponseEntity insert(UsuarioModel usuario);
-    ResponseEntity<UsuarioModel> findById(int id);
+    UsuarioModel findById(int id);
     ResponseEntity<List<UsuarioModel>> findAll() throws SQLException;
     ResponseEntity<UsuarioModel> update(UsuarioModel livro, int id) throws SQLException;
     void remove(int id);

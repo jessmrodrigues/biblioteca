@@ -65,7 +65,7 @@ public class MySqlLivro implements LivroDAO {
     }
 
     @Override
-    public ResponseEntity<LivroModel> findById(int id) {
+    public LivroModel findById(int id) {
         if (this.connection != null) {
             try {
                 LivroModel livroModel = new LivroModel();
@@ -77,7 +77,7 @@ public class MySqlLivro implements LivroDAO {
                     livroModel.setTitulo(rs.getString("titulo"));
                     livroModel.setAuthor(rs.getString("author"));
                     livroModel.setEmail(rs.getString("email"));
-                    return ResponseEntity.ok(livroModel);
+                    return livroModel;
                 }
             } catch (SQLException e) {
                 e.getMessage();
